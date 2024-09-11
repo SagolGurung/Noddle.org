@@ -15,6 +15,8 @@ function App() {
 
         {/* Define the Login route */}
         <Route path="/login" element={<Login />} />
+
+        <Route path="/home" element={<Home />} />
       </Routes>
     </BrowserRouter>
   );

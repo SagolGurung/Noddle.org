@@ -154,13 +154,13 @@ class MobileContainer extends Component {
               Home
             </Menu.Item>
             <Menu.Item as={Link} to="">
-              Work
+              Courses
             </Menu.Item>
             <Menu.Item as={Link} to="">
-              Company
+              Exams
             </Menu.Item>
             <Menu.Item as={Link} to="">
-              Careers
+              Smart Assessment
             </Menu.Item>
             <Menu.Item as={Link} to="">
               Log in
@@ -230,34 +230,34 @@ const HomepageLayout = () => (
         <Grid.Row>
           <Grid.Column width={8}>
             <Header as="h3" style={{ fontSize: "2em" }}>
-              We Help Companies and Companions
+              Building the future of learning!
             </Header>
             <p style={{ fontSize: "1.33em" }}>
-              We can give your company superpowers to do things that they never
-              thought possible. Let us delight your customers and empower your
-              needs... through pure data analytics.
+              Noddle.org is a solid learning platform and environment for
+              securely taking online exams.
             </p>
             <Header as="h3" style={{ fontSize: "2em" }}>
-              We Make Bananas That Can Dance
+              Every exams is highly secure and sophisticatedly monitored by
+              computer vision
             </Header>
             <p style={{ fontSize: "1.33em" }}>
-              Yes that's right, you thought it was the stuff of dreams, but even
-              bananas can be bioengineered.
+              Brightening the exams process with advance AI Assessment tools, be
+              it for learning or for exams.
             </p>
           </Grid.Column>
-          <Grid.Column floated="right" width={6}>
+          <Grid.Column floated="right" width={5}>
             <Image
               bordered
               rounded
               size="large"
-              src="/images/wireframe/white-image.png"
+              src={require("../pages/images/exams.jpg")}
             />
           </Grid.Column>
         </Grid.Row>
         <Grid.Row>
           <Grid.Column textAlign="center">
             <Button as={Link} to="" size="huge">
-              Check Them Out
+              Learn more
             </Button>
           </Grid.Column>
         </Grid.Row>
@@ -269,19 +269,20 @@ const HomepageLayout = () => (
         <Grid.Row textAlign="center">
           <Grid.Column style={{ paddingBottom: "5em", paddingTop: "5em" }}>
             <Header as="h3" style={{ fontSize: "2em" }}>
-              "What a Company"
+              Courses
             </Header>
             <p style={{ fontSize: "1.33em" }}>
-              That is what they all say about us
+              That are highly flexible and automated courses for all levels of
+              learners.
             </p>
           </Grid.Column>
           <Grid.Column style={{ paddingBottom: "5em", paddingTop: "5em" }}>
             <Header as="h3" style={{ fontSize: "2em" }}>
-              "I shouldn't have gone with their competitor."
+              Computer vision
             </Header>
             <p style={{ fontSize: "1.33em" }}>
-              <Image avatar src="/images/avatar/large/nan.jpg" />
-              <b>Nan</b> Chief Fun Officer Acme Toys
+              <b>Exams that</b> are monitored by AI to detect cheating and
+              plagiarism.
             </p>
           </Grid.Column>
         </Grid.Row>
@@ -291,16 +292,15 @@ const HomepageLayout = () => (
     <Segment style={{ padding: "8em 0em" }} vertical>
       <Container text>
         <Header as="h3" style={{ fontSize: "2em" }}>
-          Breaking The Grid, Grabs Your Attention
+          Smart learning, quizes and assessments
         </Header>
         <p style={{ fontSize: "1.33em" }}>
-          Instead of focusing on content creation and hard work, we have learned
-          how to master the art of doing nothing by providing massive amounts of
-          whitespace and generic content that can seem massive, monolithic and
-          worth your attention.
+          Gone are the days of taking quizes and assessments in papers! Tired of
+          waiting for the papers to be checked by the teacher? Noddle.org is
+          here to help you!
         </p>
-        <Button as={Link} to="" size="large">
-          Read More
+        <Button as={Link} to="/home" size="large">
+          Read more on how its done
         </Button>
 
         <Divider
@@ -309,19 +309,17 @@ const HomepageLayout = () => (
           horizontal
           style={{ margin: "3em 0em", textTransform: "uppercase" }}
         >
-          <Link to="">Case Studies</Link>
+          <Link to="/home">Take me home</Link>
         </Divider>
 
         <Header as="h3" style={{ fontSize: "2em" }}>
-          Did We Tell You About Our Bananas?
+          Computer Vision
         </Header>
         <p style={{ fontSize: "1.33em" }}>
-          Yes I know you probably disregarded the earlier boasts as non-sequitur
-          filler content, but it's really true. It took years of gene splicing
-          and combinatory DNA research, but our bananas can really dance.
+          How does AI monitior exams and proctor excellently?
         </p>
         <Button as={Link} to="" size="large">
-          I'm Still Quite Interested
+          Learn more
         </Button>
       </Container>
     </Segment>
@@ -340,10 +338,10 @@ const HomepageLayout = () => (
                   Contact Us
                 </List.Item>
                 <List.Item as={Link} to="">
-                  Religious Ceremonies
+                  More info
                 </List.Item>
                 <List.Item as={Link} to="">
-                  Gazebo Plans
+                  Final year project BCU
                 </List.Item>
               </List>
             </Grid.Column>
@@ -351,26 +349,26 @@ const HomepageLayout = () => (
               <Header inverted as="h4" content="Services" />
               <List link inverted>
                 <List.Item as={Link} to="">
-                  Banana Pre-Order
+                  Report an issue
                 </List.Item>
                 <List.Item as={Link} to="">
-                  DNA FAQ
+                  FAQ
                 </List.Item>
                 <List.Item as={Link} to="">
-                  How To Access
+                  Hire me
                 </List.Item>
                 <List.Item as={Link} to="">
-                  Favorite X-Men
+                  Please
                 </List.Item>
               </List>
             </Grid.Column>
             <Grid.Column width={7}>
               <Header as="h4" inverted>
-                Footer Header
+                Final year project sample site for BCU
               </Header>
               <p>
-                Extra space for a call to action inside the footer that could
-                help re-engage users.
+                An ambitious project that will reflect the learning capabilities
+                of the creator.
               </p>
             </Grid.Column>
           </Grid.Row>
