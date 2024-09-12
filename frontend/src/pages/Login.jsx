@@ -29,6 +29,8 @@ const LoginForm = () => {
         password,
       });
       console.log("Login success!", response.data);
+      localStorage.setItem("accessToken", response.data.tokens.access);
+      localStorage.setItem("refreshToken", response.data.tokens.refresh);
       setIsLoggedIn(true);
       setError(null);
     } catch (error) {
@@ -49,8 +51,8 @@ const LoginForm = () => {
   return (
     <Grid textAlign="center" style={{ height: "100vh" }} verticalAlign="middle">
       <Grid.Column style={{ maxWidth: 450 }}>
-        <Header as="h2" color="teal" textAlign="center">
-          <Image src="/logo.png" /> Log-in to your account
+        <Header as="h2" color="black" textAlign="center">
+          <Image src="/logo.png" /> Welcome to Noddle.org
         </Header>
         <Form size="large" onSubmit={handleLogin}>
           <Segment stacked>
@@ -72,7 +74,7 @@ const LoginForm = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
             <Button
-              color="teal"
+              color="black"
               fluid
               size="large"
               loading={isLoading}
@@ -85,7 +87,7 @@ const LoginForm = () => {
           </Segment>
         </Form>
         <Message>
-          New to us? <a href="#">Sign Up</a>
+          <a>New to us? Sign Up</a>
         </Message>
       </Grid.Column>
     </Grid>
