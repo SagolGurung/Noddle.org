@@ -1,6 +1,6 @@
 import { createMedia } from "@artsy/fresnel";
 import PropTypes from "prop-types";
-import React, { Component } from "react";
+import React, { Component, useState, useEffect } from "react";
 import { InView } from "react-intersection-observer";
 import {
   Button,
@@ -17,6 +17,7 @@ import {
 } from "semantic-ui-react";
 
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const { MediaContextProvider, Media } = createMedia({
   breakpoints: {
@@ -99,7 +100,7 @@ class DesktopContainer extends Component {
                   Smart Assessment
                 </Menu.Item>
                 <Menu.Item position="right">
-                  <Button as={Link} to="" inverted={!fixed}>
+                  <Button as={Link} to="/login" inverted={!fixed}>
                     Log in
                   </Button>
                   <Button
@@ -212,12 +213,60 @@ MobileContainer.propTypes = {
   children: PropTypes.node,
 };
 
-const ResponsiveContainer = ({ children }) => (
-  <MediaContextProvider>
-    <DesktopContainer>{children}</DesktopContainer>
-    <MobileContainer>{children}</MobileContainer>
-  </MediaContextProvider>
-);
+const ResponsiveContainer = ({ children }) => {
+  const [username, setUsername] = useState("");
+  const [isLoggedIn, setLoggedIn] = useState(false);
+  // const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkLoggedInUser = async () => {
+      try {
+        const token = localStorage.getItem("accessToken");
+        if (token) {
+          const config = {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          };
+          const response = await axios.get(
+            "http://127.0.0.1:8000/api/user/",
+            config
+          );
+          setLoggedIn(true);
+          setUsername(response.data.username);
+          console.log(response.data.username);
+        } else {
+          setLoggedIn(false);
+          setUsername("");
+        }
+      } catch (error) {
+        setLoggedIn(false);
+        setUsername("");
+      }
+    };
+    checkLoggedInUser();
+  }, []);
+
+  return (
+    <MediaContextProvider>
+      <DesktopContainer
+        isLoggedIn={isLoggedIn}
+        username={username}
+
+        // handleLogout={handleLogout}
+      >
+        {children}
+      </DesktopContainer>
+      <MobileContainer
+        isLoggedIn={isLoggedIn}
+        username={username}
+        // handleLogout={handleLogout}
+      >
+        {children}
+      </MobileContainer>
+    </MediaContextProvider>
+  );
+};
 
 ResponsiveContainer.propTypes = {
   children: PropTypes.node,
