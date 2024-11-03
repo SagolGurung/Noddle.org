@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import {
   Button,
   Form,
@@ -8,7 +9,7 @@ import {
   Message,
   Segment,
 } from "semantic-ui-react";
-import axios from "axios";
+import noddleLogo from "../pages/images/noddlelogo.png";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -52,7 +53,8 @@ const LoginForm = () => {
     <Grid textAlign="center" style={{ height: "100vh" }} verticalAlign="middle">
       <Grid.Column style={{ maxWidth: 450 }}>
         <Header as="h2" color="black" textAlign="center">
-          <Image src="/logo.png" /> Welcome to Noddle.org
+          <Image src={noddleLogo} style={{ mixBlendMode: "divide" }} /> Welcome
+          to Noddle.org
         </Header>
         <Form size="large" onSubmit={handleLogin}>
           <Segment stacked>
@@ -82,12 +84,12 @@ const LoginForm = () => {
             >
               Login
             </Button>
-            {error && <Message error>{error}</Message>}
-            {isLoggedIn && <Message success>Login Successful!</Message>}
+            {error && <Message error content={error} />}
+            {isLoggedIn && <Message success content="Login Successful!" />}
           </Segment>
         </Form>
         <Message>
-          <a>New to us? Sign Up</a>
+          New to us? <a href="/register">Sign Up</a>
         </Message>
       </Grid.Column>
     </Grid>

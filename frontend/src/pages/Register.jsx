@@ -1,10 +1,17 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Button } from "semantic-ui-react";
+import {
+  Button,
+  Form,
+  Grid,
+  Header,
+  Message,
+  Segment,
+} from "semantic-ui-react";
 
 export default function Register() {
   const [formData, setFormData] = useState({
-    username: "", // Changed from 'name' to 'username'
+    username: "",
     email: "",
     password1: "",
     password2: "",
@@ -20,7 +27,7 @@ export default function Register() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault();
     if (isLoading) return;
 
     setIsLoading(true);
@@ -46,52 +53,65 @@ export default function Register() {
   };
 
   return (
-    <div>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
-      <h2>Register:</h2>
-      <form onSubmit={handleSubmit}>
-        <label>Username:</label>
-        <br />
-        <input
-          type="text"
-          name="username"
-          value={formData.username}
-          onChange={handleChange}
-        />
-        <br />
-        <label>Email:</label>
-        <br />
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-        />
-        <br />
-        <label>Password:</label>
-        <br />
-        <input
-          type="password"
-          name="password1"
-          value={formData.password1}
-          onChange={handleChange}
-        />
-        <br />
-        <label>Confirm Password:</label>
-        <br />
-        <input
-          type="password"
-          name="password2"
-          value={formData.password2}
-          onChange={handleChange}
-        />
-        <br />
-        <br />
-        <Button type="submit" primary loading={isLoading} disabled={isLoading}>
-          Register
-        </Button>
-      </form>
-    </div>
+    <Grid textAlign="center" style={{ height: "100vh" }} verticalAlign="middle">
+      <Grid.Column style={{ maxWidth: 450 }}>
+        <Header as="h2" textAlign="center">
+          Register Account
+        </Header>
+        <Form size="large" onSubmit={handleSubmit}>
+          <Segment stacked>
+            <Form.Input
+              fluid
+              icon="user"
+              iconPosition="left"
+              placeholder="Username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+            />
+            <Form.Input
+              fluid
+              icon="mail"
+              iconPosition="left"
+              placeholder="Email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+            />
+            <Form.Input
+              fluid
+              icon="lock"
+              iconPosition="left"
+              placeholder="Password"
+              type="password"
+              name="password1"
+              value={formData.password1}
+              onChange={handleChange}
+            />
+            <Form.Input
+              fluid
+              icon="lock"
+              iconPosition="left"
+              placeholder="Confirm Password"
+              type="password"
+              name="password2"
+              value={formData.password2}
+              onChange={handleChange}
+            />
+            <Button
+              color="black"
+              fluid
+              size="large"
+              loading={isLoading}
+              disabled={isLoading}
+            >
+              Register
+            </Button>
+          </Segment>
+        </Form>
+        {error && <Message error content={error} />}
+        {successMessage && <Message success content={successMessage} />}
+      </Grid.Column>
+    </Grid>
   );
 }
