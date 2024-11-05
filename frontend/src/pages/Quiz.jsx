@@ -1,50 +1,32 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { Container, Header, Segment, List, Button } from "semantic-ui-react";
 
 function Quiz() {
-  const [quizzes, setQuizzes] = useState([]);
+  const [quiz, setQuiz] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedAnswers, setSelectedAnswers] = useState({});
 
   useEffect(() => {
-    // Fetch quiz data from the backend
-    const fetchQuizzes = async () => {
+    // Fetch quiz data for a specific course
+    const fetchQuiz = async () => {
       try {
         const response = await axios.get(
-          "http://127.0.0.1:8000/dataapi/quizzes/"
+          "http://127.0.0.1:8000/dataapi/quizzes/1"
         );
-        setQuizzes(response.data);
+        setQuiz(response.data);
         setLoading(false);
       } catch (error) {
+        console.error("Error fetching quiz data:", error);
         setError("Error fetching quiz data");
         setLoading(false);
       }
     };
-    fetchQuizzes();
+    fetchQuiz();
   }, []);
 
-  const handleAnswerChange = (quizId, questionId, choiceId) => {
-    // Set selected answers for each question
-    setSelectedAnswers((prevAnswers) => ({
-      ...prevAnswers,
-      [quizId]: {
-        ...prevAnswers[quizId],
-        [questionId]: choiceId,
-      },
-    }));
-  };
-
-  const handleSubmit = (quizId) => {
-    console.log(
-      `Submitted answers for Quiz ${quizId}:`,
-      selectedAnswers[quizId]
-    );
-    // Here you can handle form submission logic (e.g., sending the answers to the backend)
-  };
-
   if (loading) {
-    return <p>Loading quizzes...</p>;
+    return <p>Loading quiz details...</p>;
   }
 
   if (error) {
@@ -52,57 +34,37 @@ function Quiz() {
   }
 
   return (
-    <div>
-      <h1>Available Quizzes</h1>
-      <ul>
-        {quizzes.map((quiz) => (
-          <li key={quiz.id}>
-            <h2>{quiz.title}</h2>
-            <p>{quiz.description}</p>
+    <Container>
+      <Segment vertical style={{ padding: "4em 0em" }}>
+        <Header as="h2">{quiz.title}</Header>
 
-            <h3>Questions:</h3>
-            <ul>
-              {quiz.questions && quiz.questions.length > 0 ? (
-                quiz.questions.map((question) => (
-                  <li key={question.id}>
-                    <strong>{question.question_text}</strong>
-                    <ul>
-                      {question.choices.map((choice) => (
-                        <li key={choice.id}>
-                          <label>
-                            <input
-                              type="radio"
-                              name={`question-${quiz.id}-${question.id}`} // Unique name for each question
-                              value={choice.id}
-                              checked={
-                                selectedAnswers[quiz.id]?.[question.id] ===
-                                choice.id
-                              }
-                              onChange={() =>
-                                handleAnswerChange(
-                                  quiz.id,
-                                  question.id,
-                                  choice.id
-                                )
-                              }
-                            />
-                            {choice.choice_text}
-                          </label>
-                        </li>
-                      ))}
-                    </ul>
-                  </li>
-                ))
-              ) : (
-                <p>No questions available for this quiz.</p>
-              )}
-            </ul>
-
-            <button onClick={() => handleSubmit(quiz.id)}>Submit Quiz</button>
-          </li>
-        ))}
-      </ul>
-    </div>
+        <Header as="h3">Questions:</Header>
+        <List divided relaxed>
+          {quiz.questions.map((question) => (
+            <List.Item key={question.id}>
+              <List.Content>
+                <List.Header>{question.question_text}</List.Header>
+                <List.Description>
+                  {question.choices.map((choice) => (
+                    <div key={choice.id}>
+                      <label>
+                        <input
+                          type="radio"
+                          name={`question-${question.id}`}
+                          value={choice.id}
+                        />
+                        {choice.choice_text}
+                      </label>
+                    </div>
+                  ))}
+                </List.Description>
+              </List.Content>
+            </List.Item>
+          ))}
+        </List>
+        <Button primary>Submit Quiz</Button>
+      </Segment>
+    </Container>
   );
 }
 

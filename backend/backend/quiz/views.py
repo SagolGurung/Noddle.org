@@ -15,7 +15,7 @@ class QuizListView(generics.ListAPIView):
 class QuizDetailView(generics.RetrieveAPIView):
     queryset = Quiz.objects.all()
     serializer_class = QuizSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = (AllowAny,)
 
 # Handle quiz submission
 class SubmitQuizView(generics.CreateAPIView):

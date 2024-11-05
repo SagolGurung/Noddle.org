@@ -4,7 +4,8 @@ import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Quiz from "./pages/Quiz";
-
+import Exams from "./pages/Exams";
+import Courses from "./pages/Courses";
 function App() {
   return (
     <BrowserRouter>
@@ -20,6 +21,8 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/quiz/:id" element={<Quiz />} />
         <Route path="/quiz" element={<Quiz />} />
+        <Route path="/exams" element={<Exams />} />
+        <Route path="/courses" element={<Courses />} />
       </Routes>
     </BrowserRouter>
   );
