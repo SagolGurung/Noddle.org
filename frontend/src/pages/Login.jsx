@@ -50,7 +50,11 @@ const LoginForm = () => {
   };
 
   return (
-    <Grid textAlign="center" style={{ height: "100vh" }} verticalAlign="middle">
+    <Grid
+      textAlign="center"
+      style={{ height: "100vh", backgroundColor: "#9C9BA9" }} // bg color is here
+      verticalAlign="middle"
+    >
       <Grid.Column style={{ maxWidth: 450 }}>
         <Header as="h2" color="black" textAlign="center">
           <Image src={noddleLogo} style={{ mixBlendMode: "divide" }} /> Welcome

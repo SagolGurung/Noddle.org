@@ -31,7 +31,7 @@ const HomepageHeading = ({ mobile }) => (
   <Container text>
     <Header
       as="h1"
-      content="Welcome Noddle.org"
+      content="Welcome to Noddle.org"
       inverted
       style={{
         fontSize: mobile ? "2em" : "4em",
@@ -42,7 +42,7 @@ const HomepageHeading = ({ mobile }) => (
     />
     <Header
       as="h2"
-      content="A learning platform and online exams run by AI teachers"
+      content="A learning platform and online exams run by future!"
       inverted
       style={{
         fontSize: mobile ? "1.5em" : "1.7em",
