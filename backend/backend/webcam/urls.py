@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import FaceDetectionView
+from .views import FaceAndPhoneDetectionView
 
 urlpatterns = [
-    path('webcam/', FaceDetectionView.as_view(), name='face-detection'),
+    path('webcam/', FaceAndPhoneDetectionView.as_view(), name='face-detection'),
 ]

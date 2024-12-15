@@ -12,13 +12,16 @@ function Quizwebcam() {
   const [showHaltPage, setShowHaltPage] = useState(false);
   const [timeLeft, setTimeLeft] = useState(1800); // 30 minutes
   const [quizStarted, setQuizStarted] = useState(false);
-  
+
   const API_BASE_URL = process.env.REACT_APP_API_URL || "";
 
   // States and refs for camera integration
   const [statusMessage, setStatusMessage] = useState("Waiting for camera...");
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+
+  // New state variable to track suspicious counts
+  const [suspiciousCount, setSuspiciousCount] = useState(0);
 
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -105,8 +108,9 @@ function Quizwebcam() {
   useEffect(() => {
     if (!quizStarted) return;
 
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => {
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then((stream) => {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           videoRef.current.play();
@@ -120,7 +124,7 @@ function Quizwebcam() {
 
         return () => clearInterval(intervalId);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Error accessing camera:", err);
         setStatusMessage("Unable to access camera.");
       });
@@ -138,16 +142,30 @@ function Quizwebcam() {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     const dataURL = canvas.toDataURL("image/png");
 
-    axios.post(`${API_BASE_URL}/api/webcam/`, { image: dataURL })
-      .then(res => {
+    axios
+      .post(`${API_BASE_URL}/api/webcam/`, { image: dataURL })
+      .then((res) => {
         const { status } = res.data;
         if (status === "normal") {
           setStatusMessage("Face Detected (Normal)");
-        } else {
+          setSuspiciousCount(0); // Reset suspicious count
+        } else if (status === "phone_detected") {
+          setStatusMessage("Cell Phone Detected (Suspicious)");
+          // setShowHaltPage(true); // Halt the exam immediately
+        } else if (status === "suspicious") {
           setStatusMessage("No Face Detected (Suspicious)");
+
+          // Increment suspicious count and check threshold
+          setSuspiciousCount((prevCount) => {
+            const newCount = prevCount + 1;
+            if (newCount >= 3) {
+              setShowHaltPage(true); // Halt exam after 3 consecutive suspicious detections
+            }
+            return newCount;
+          });
         }
       })
-      .catch(err => console.error("Error sending frame to backend:", err));
+      .catch((err) => console.error("Error sending frame to backend:", err));
   };
 
   if (loading) return <p>Loading quiz details...</p>;
