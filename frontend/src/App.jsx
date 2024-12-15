@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
-import Quiz from "./pages/Quiz";
+import Quiz from "./pages/Quizwebcam";
 import Exams from "./pages/Exams";
 import Courses from "./pages/Courses";
 function App() {

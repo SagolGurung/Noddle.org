@@ -6,5 +6,7 @@ urlpatterns = [
     path('api/auth/', include('rest_framework.urls')),
     path('dataapi/', include('quiz.urls')),
     path('api/', include('accounts.urls')),
+    path('api/', include('webcam.urls')),
+
     
 ]

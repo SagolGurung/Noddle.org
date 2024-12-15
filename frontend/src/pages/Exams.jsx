@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
-import { Card, Container, Header, Segment, Button } from "semantic-ui-react";
-import { Link } from "react-router-dom";
-import axios from "axios";
-import { createMedia } from "@artsy/fresnel";
-import { InView } from "react-intersection-observer";
-import { Menu } from "semantic-ui-react";
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { Card, Container, Header, Segment, Button, Menu } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { createMedia } from '@artsy/fresnel';
+import { InView } from 'react-intersection-observer';
+
+const API_BASE_URL = process.env.REACT_APP_API_URL; // Move the API base URL outside of the component
 
 const { MediaContextProvider, Media } = createMedia({
   breakpoints: {
@@ -30,11 +31,11 @@ class DesktopContainer extends React.Component {
           <Segment
             inverted
             textAlign="center"
-            style={{ minHeight: 100, padding: "1em 0em" }}
+            style={{ minHeight: 100, padding: '1em 0em' }}
             vertical
           >
             <Menu
-              fixed={fixed ? "top" : null}
+              fixed={fixed ? 'top' : null}
               inverted={!fixed}
               pointing={!fixed}
               secondary={!fixed}
@@ -62,7 +63,7 @@ class DesktopContainer extends React.Component {
                     to="/register"
                     inverted={!fixed}
                     primary={fixed}
-                    style={{ marginLeft: "0.5em" }}
+                    style={{ marginLeft: '0.5em' }}
                   >
                     Sign up
                   </Button>
@@ -97,19 +98,17 @@ const Exams = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch exam data from the backend
     const fetchExams = async () => {
       try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/dataapi/quizzes/"
-        );
+        const response = await axios.get(`${API_BASE_URL}/dataapi/quizzes`);
         setExams(response.data);
         setLoading(false);
       } catch (error) {
-        setError("Error fetching exam data");
+        setError("Error fetching exam data: " + error.message); // Provide more informative error message
         setLoading(false);
       }
     };
+
     fetchExams();
   }, []);
 
@@ -118,13 +117,13 @@ const Exams = () => {
   }
 
   if (error) {
-    return <p>{error}</p>;
+    return <p>Error: {error}</p>;
   }
 
   return (
     <ResponsiveContainer>
-      <Segment vertical style={{ padding: "8em 0em" }}>
-        <Header as="h2" textAlign="center" style={{ fontSize: "3em" }}>
+      <Segment vertical style={{ padding: '8em 0em' }}>
+        <Header as="h2" textAlign="center" style={{ fontSize: '3em' }}>
           Available Exams
         </Header>
         <Container>
