@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Quiz from "./pages/Quizwebcam";
 import Exams from "./pages/Exams";
 import Courses from "./pages/Courses";
+import MathQuestion from "./pages/Tutor/maths";
 function App() {
   return (
     <BrowserRouter>
@@ -23,6 +24,7 @@ function App() {
         <Route path="/quiz" element={<Quiz />} />
         <Route path="/exams" element={<Exams />} />
         <Route path="/courses" element={<Courses />} />
+        <Route path="/mathsask" element={<MathQuestion />}/>
       </Routes>
     </BrowserRouter>
   );

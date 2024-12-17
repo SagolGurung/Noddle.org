@@ -55,7 +55,7 @@ export default function Register() {
   return (
     <Grid
       textAlign="center"
-      style={{ height: "100vh", backgroundColor: "#9C9BA9" }} // bg color is here
+      style={{ height: "100vh", backgroundColor: "#f1f0ff" }} // bg color is here
       verticalAlign="middle"
     >
       <Grid.Column style={{ maxWidth: 450 }}>
