@@ -20,8 +20,8 @@ function Quizwebcam() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
-  // New state variable to track suspicious counts
   const [suspiciousCount, setSuspiciousCount] = useState(0);
+  const [phoneDetectedCount, setPhoneDetectedCount] = useState(0); // New state for phone detection duration
 
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -95,16 +95,12 @@ function Quizwebcam() {
     setQuizStarted(true);
     if (document.documentElement.requestFullscreen) {
       document.documentElement.requestFullscreen();
-    } else if (document.documentElement.mozRequestFullScreen) {
-      document.documentElement.mozRequestFullScreen(); // Firefox
     } else if (document.documentElement.webkitRequestFullscreen) {
-      document.documentElement.webkitRequestFullscreen(); // Chrome, Safari, Opera
-    } else if (document.documentElement.msRequestFullscreen) {
-      document.documentElement.msRequestFullscreen(); // IE/Edge
+      document.documentElement.webkitRequestFullscreen();
     }
   };
 
-  // This effect starts the camera and sets up periodic frame capture
+  // Start the camera and capture frames periodically
   useEffect(() => {
     if (!quizStarted) return;
 
@@ -117,10 +113,9 @@ function Quizwebcam() {
           setStatusMessage("Camera access granted. Monitoring...");
         }
 
-        // Capture a frame every 5 seconds (polling)
         const intervalId = setInterval(() => {
           captureFrame();
-        }, 5000);
+        }, 5000); // Poll every 5 seconds
 
         return () => clearInterval(intervalId);
       })
@@ -146,20 +141,30 @@ function Quizwebcam() {
       .post(`${API_BASE_URL}/api/webcam/`, { image: dataURL })
       .then((res) => {
         const { status } = res.data;
+
         if (status === "normal") {
           setStatusMessage("Face Detected (Normal)");
-          setSuspiciousCount(0); // Reset suspicious count
+          setSuspiciousCount(0);
+          setPhoneDetectedCount(0); // Reset phone count
         } else if (status === "phone_detected") {
-          setStatusMessage("Cell Phone Detected (Suspicious)");
-          // setShowHaltPage(true); // Halt the exam immediately
+          setStatusMessage("Cell Phone Detected (Monitoring...)");
+
+          setPhoneDetectedCount((prev) => {
+            const newCount = prev + 1;
+            if (newCount * 5 >= 10) { // 5s polling, alert after 10s
+              setStatusMessage("Cell Phone Detected (ALERT)");
+              setShowHaltPage(true);
+            }
+            return newCount;
+          });
         } else if (status === "suspicious") {
           setStatusMessage("No Face Detected (Suspicious)");
+          setPhoneDetectedCount(0);
 
-          // Increment suspicious count and check threshold
-          setSuspiciousCount((prevCount) => {
-            const newCount = prevCount + 1;
+          setSuspiciousCount((prev) => {
+            const newCount = prev + 1;
             if (newCount >= 3) {
-              setShowHaltPage(true); // Halt exam after 3 consecutive suspicious detections
+              setShowHaltPage(true);
             }
             return newCount;
           });

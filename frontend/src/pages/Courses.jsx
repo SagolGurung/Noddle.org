@@ -13,6 +13,7 @@ import axios from "axios";
 import { createMedia } from "@artsy/fresnel";
 import { InView } from "react-intersection-observer";
 import { Menu } from "semantic-ui-react";
+const API_BASE_URL = process.env.REACT_APP_API_URL || "";
 
 const { MediaContextProvider, Media } = createMedia({
   breakpoints: {
@@ -107,9 +108,7 @@ const Courses = () => {
     // Fetch course data from the backend
     const fetchCourses = async () => {
       try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/dataapi/quizzes/"
-        );
+        const response = await axios.get(`${API_BASE_URL}/dataapi/quizzes/`);
         setCourses(response.data);
         setLoading(false);
       } catch (error) {
