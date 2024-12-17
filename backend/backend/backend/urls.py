@@ -7,6 +7,7 @@ urlpatterns = [
     path('dataapi/', include('quiz.urls')),
     path('api/', include('accounts.urls')),
     path('api/', include('webcam.urls')),
+    path('api/', include('mathapi.urls'))
 
     
 ]
