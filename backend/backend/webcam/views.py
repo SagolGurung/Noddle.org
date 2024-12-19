@@ -9,24 +9,21 @@ import torch
 from rest_framework.permissions import AllowAny
 import logging
 
-# Initialize logger
-logger = logging.getLogger('webcam')  # Replace 'webcam' with your app name
+logger = logging.getLogger('webcam')  # app name
 
 # Paths to Haar cascade and YOLO model
 CASCADE_PATH = os.path.join(os.path.dirname(__file__), 'static', 'haarcascade_frontalface_default.xml')
 YOLO_PATH = os.path.join(os.path.dirname(__file__), 'static', 'cellphonedetect.pt')
 face_cascade = cv2.CascadeClassifier(CASCADE_PATH)
 
-# Load YOLOv5 model (only once during server start for efficiency)
 try:
-    model = torch.hub.load('ultralytics/yolov5', 'custom', path=YOLO_PATH, force_reload=True)
+    model = torch.hub.load('ultralytics/yolov5', 'custom', path=YOLO_PATH, force_reload=True) #turn this false if once run and has cache
     model.conf = 0.25  # Confidence threshold
     logger.debug("YOLOv5 model loaded successfully.")
 except Exception as e:
     logger.error(f"Error loading YOLOv5 model: {e}")
     raise e
 
-# Verify model class names for debugging
 logger.debug(f"Model classes: {model.names}")  # For debugging
 
 class FaceAndPhoneDetectionView(APIView):
@@ -42,7 +39,7 @@ class FaceAndPhoneDetectionView(APIView):
         if image_data.startswith("data:image"):
             image_data = image_data.split(",")[1]
 
-        # Decode the image
+        # Decodes the image
         try:
             img_binary = base64.b64decode(image_data)
             np_arr = np.frombuffer(img_binary, np.uint8)
@@ -60,7 +57,7 @@ class FaceAndPhoneDetectionView(APIView):
             logger.error(f"Image resizing failed: {e}")
             return Response({"error": f"Image resizing failed: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # Convert image to RGB
+    
         try:
             img_rgb = cv2.cvtColor(img_resized, cv2.COLOR_BGR2RGB)
         except Exception as e:
@@ -76,16 +73,16 @@ class FaceAndPhoneDetectionView(APIView):
             logger.error(f"YOLO detection failed: {e}")
             return Response({"error": f"YOLO detection failed: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # Analyze YOLO detections
+      
         detected_phones = 0
-        for *box, conf, cls in detections:  # x1, y1, x2, y2, confidence, class
+        for *box, conf, cls in detections:  
             class_id = int(cls)
             label = model.names[class_id]
             logger.debug(f"Detected label: {label}, confidence: {conf}")
 
             if label.lower() == "cell phone":
                 detected_phones += 1
-                break  # Stop further processing if a phone is detected
+                break  
 
         # If a phone is detected, return immediately
         if detected_phones > 0:
