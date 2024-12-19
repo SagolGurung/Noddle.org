@@ -9,6 +9,8 @@ import {
   Segment,
 } from "semantic-ui-react";
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || "";
+
 export default function Register() {
   const [formData, setFormData] = useState({
     username: "",
@@ -34,7 +36,7 @@ export default function Register() {
 
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/register/",
+        `${API_BASE_URL}/api/register/`,
         formData
       );
       console.log("Success!", response.data);

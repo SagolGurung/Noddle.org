@@ -58,7 +58,7 @@ class DesktopContainer extends React.Component {
                 <Menu.Item as={Link} to="/exams">
                   Exams
                 </Menu.Item>
-                <Menu.Item as={Link} to="/assessments">
+                <Menu.Item as={Link} to="/mathsask">
                   Smart Assessment
                 </Menu.Item>
                 <Menu.Item position="right">

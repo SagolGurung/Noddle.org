@@ -45,7 +45,7 @@ class DesktopContainer extends React.Component {
                 <Menu.Item as={Link} to="/">Home</Menu.Item>
                 <Menu.Item as={Link} to="/courses">Courses</Menu.Item>
                 <Menu.Item as={Link} to="/exams" active>Exams</Menu.Item>
-                <Menu.Item as={Link} to="/assessments">Smart Assessment</Menu.Item>
+                <Menu.Item as={Link} to="/mathsask">Smart Assessment</Menu.Item>
                 <Menu.Item position="right">
                   <Button as={Link} to="/login" inverted={!fixed}>Log in</Button>
                   <Button as={Link} to="/register" inverted={!fixed} primary={fixed} style={{ marginLeft: "0.5em" }}>
