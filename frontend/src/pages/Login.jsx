@@ -1,3 +1,4 @@
+// src/components/LoginForm.jsx
 import React, { useState } from "react";
 import axios from "axios";
 import {
@@ -9,14 +10,18 @@ import {
   Message,
   Segment,
 } from "semantic-ui-react";
+import { useNavigate, Link } from "react-router-dom";
 import noddleLogo from "../pages/images/noddlelogo.png";
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || "";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // Removed isLoggedIn state as navigation handles it
+  const navigate = useNavigate(); // Initialize navigate
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -25,15 +30,15 @@ const LoginForm = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/login/", {
+      const response = await axios.post(`${API_BASE_URL}/api/login/`, {
         email,
         password,
       });
       console.log("Login success!", response.data);
       localStorage.setItem("accessToken", response.data.tokens.access);
       localStorage.setItem("refreshToken", response.data.tokens.refresh);
-      setIsLoggedIn(true);
       setError(null);
+      navigate("/home"); // Redirect after successful login
     } catch (error) {
       if (error.response && error.response.data) {
         const errorMessage = Object.values(error.response.data)
@@ -43,7 +48,6 @@ const LoginForm = () => {
       } else {
         setError("An unexpected error occurred. Please try again.");
       }
-      setIsLoggedIn(false);
     } finally {
       setIsLoading(false);
     }
@@ -52,7 +56,7 @@ const LoginForm = () => {
   return (
     <Grid
       textAlign="center"
-      style={{ height: "100vh", backgroundColor: "#f1f0ff" }} // bg color is here
+      style={{ height: "100vh", backgroundColor: "#f1f0ff" }}
       verticalAlign="middle"
     >
       <Grid.Column style={{ maxWidth: 450 }}>
@@ -69,6 +73,8 @@ const LoginForm = () => {
               placeholder="E-mail address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
+              type="email"
             />
             <Form.Input
               fluid
@@ -78,6 +84,7 @@ const LoginForm = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
             />
             <Button
               color="black"
@@ -85,15 +92,17 @@ const LoginForm = () => {
               size="large"
               loading={isLoading}
               disabled={isLoading}
+              type="submit"
             >
               Login
             </Button>
             {error && <Message error content={error} />}
-            {isLoggedIn && <Message success content="Login Successful!" />}
+            {/* Optionally, remove the success message as navigation occurs */}
+            {/* {isLoggedIn && <Message success content="Login Successful!" />} */}
           </Segment>
         </Form>
         <Message>
-          New to us? <a href="/register">Sign Up</a>
+          New to us? <Link to="/register">Sign Up</Link>
         </Message>
       </Grid.Column>
     </Grid>

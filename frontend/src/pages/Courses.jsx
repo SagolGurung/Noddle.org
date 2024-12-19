@@ -1,3 +1,5 @@
+// src/components/Courses.jsx
+
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import {
@@ -6,13 +8,14 @@ import {
   Header,
   Segment,
   Button,
-  Image, // Add this line
+  Image,
 } from "semantic-ui-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { createMedia } from "@artsy/fresnel";
 import { InView } from "react-intersection-observer";
 import { Menu } from "semantic-ui-react";
+
 const API_BASE_URL = process.env.REACT_APP_API_URL || "";
 
 const { MediaContextProvider, Media } = createMedia({
@@ -29,7 +32,7 @@ class DesktopContainer extends React.Component {
   toggleFixedMenu = (inView) => this.setState({ fixed: !inView });
 
   render() {
-    const { children } = this.props;
+    const { children, isLoggedIn, username } = this.props;
     const { fixed } = this.state;
 
     return (
@@ -62,18 +65,44 @@ class DesktopContainer extends React.Component {
                   Smart Assessment
                 </Menu.Item>
                 <Menu.Item position="right">
-                  <Button as={Link} to="/login" inverted={!fixed}>
-                    Log in
-                  </Button>
-                  <Button
-                    as={Link}
-                    to="/register"
-                    inverted={!fixed}
-                    primary={fixed}
-                    style={{ marginLeft: "0.5em" }}
-                  >
-                    Sign up
-                  </Button>
+                  {isLoggedIn ? (
+                    <>
+                      <Menu.Item>
+                        <Image
+                          src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
+                            username
+                          )}&background=random&size=32`}
+                          avatar
+                          spaced="right"
+                          alt={username}
+                        />
+                        Hello, {username}!
+                      </Menu.Item>
+                      <Button
+                        as={Link}
+                        to="/logout"
+                        inverted={!fixed}
+                        style={{ marginLeft: "0.5em" }}
+                      >
+                        Logout
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button as={Link} to="/login" inverted={!fixed}>
+                        Log in
+                      </Button>
+                      <Button
+                        as={Link}
+                        to="/register"
+                        inverted={!fixed}
+                        primary={fixed}
+                        style={{ marginLeft: "0.5em" }}
+                      >
+                        Sign up
+                      </Button>
+                    </>
+                  )}
                 </Menu.Item>
               </Container>
             </Menu>
@@ -87,13 +116,59 @@ class DesktopContainer extends React.Component {
 
 DesktopContainer.propTypes = {
   children: PropTypes.node,
+  isLoggedIn: PropTypes.bool.isRequired,
+  username: PropTypes.string,
 };
 
-const ResponsiveContainer = ({ children }) => (
-  <MediaContextProvider>
-    <DesktopContainer>{children}</DesktopContainer>
-  </MediaContextProvider>
-);
+const ResponsiveContainer = ({ children }) => {
+  const [username, setUsername] = useState("");
+  const [isLoggedIn, setLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkLoggedInUser = async () => {
+      try {
+        const token = localStorage.getItem("accessToken");
+        if (token) {
+          const config = {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          };
+          const response = await axios.get(`${API_BASE_URL}/api/user/`, config);
+          setLoggedIn(true);
+          setUsername(response.data.username);
+          console.log("Logged in as:", response.data.username);
+        } else {
+          setLoggedIn(false);
+          setUsername("");
+          navigate("/login"); // Redirect to login if not authenticated
+        }
+      } catch (error) {
+        setLoggedIn(false);
+        setUsername("");
+        console.error("Error fetching user data:", error);
+        navigate("/login"); // Redirect to login on error
+      }
+    };
+    checkLoggedInUser();
+  }, [navigate]);
+
+  return (
+    <MediaContextProvider>
+      <DesktopContainer isLoggedIn={isLoggedIn} username={username}>
+        {children}
+      </DesktopContainer>
+      {/* Uncomment and implement MobileContainer if needed */}
+      {/* <MobileContainer
+        isLoggedIn={isLoggedIn}
+        username={username}
+      >
+        {children}
+      </MobileContainer> */}
+    </MediaContextProvider>
+  );
+};
 
 ResponsiveContainer.propTypes = {
   children: PropTypes.node,
@@ -108,11 +183,29 @@ const Courses = () => {
     // Fetch course data from the backend
     const fetchCourses = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/dataapi/quizzes/`);
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+          // If no token, redirect to login
+          throw new Error("No access token found");
+        }
+
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        const response = await axios.get(`${API_BASE_URL}/dataapi/quizzes/`, config);
         setCourses(response.data);
         setLoading(false);
       } catch (error) {
-        setError("Error fetching course data");
+        if (error.response && error.response.status === 401) {
+          // Unauthorized, redirect to login
+          console.error("Unauthorized access - redirecting to login.");
+          window.location.href = "/login";
+        } else {
+          setError("Error fetching course data");
+        }
         setLoading(false);
       }
     };
@@ -120,11 +213,27 @@ const Courses = () => {
   }, []);
 
   if (loading) {
-    return <p>Loading courses...</p>;
+    return (
+      <ResponsiveContainer>
+        <Segment vertical style={{ padding: "8em 0em" }}>
+          <Header as="h2" textAlign="center" style={{ fontSize: "3em" }}>
+            Loading courses...
+          </Header>
+        </Segment>
+      </ResponsiveContainer>
+    );
   }
 
   if (error) {
-    return <p>{error}</p>;
+    return (
+      <ResponsiveContainer>
+        <Segment vertical style={{ padding: "8em 0em" }}>
+          <Header as="h2" textAlign="center" color="red" style={{ fontSize: "3em" }}>
+            {error}
+          </Header>
+        </Segment>
+      </ResponsiveContainer>
+    );
   }
 
   return (
@@ -139,7 +248,7 @@ const Courses = () => {
               <Card key={course.id} raised>
                 <Image
                   src={`https://pollinations.ai/p/${encodeURIComponent(
-                    course.title + "simple vector"
+                    course.title + " simple vector"
                   )}`}
                   alt={course.title}
                   style={{ width: "100%", height: "200px", objectFit: "cover" }}
@@ -159,6 +268,10 @@ const Courses = () => {
       </Segment>
     </ResponsiveContainer>
   );
+};
+
+Courses.propTypes = {
+ 
 };
 
 export default Courses;

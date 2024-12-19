@@ -1,6 +1,7 @@
+// src/components/HomepageLayout.jsx
 import { createMedia } from "@artsy/fresnel";
 import PropTypes from "prop-types";
-import React, { Component, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { InView } from "react-intersection-observer";
 import {
   Button,
@@ -13,11 +14,11 @@ import {
   List,
   Menu,
   Segment,
-  Sidebar,
 } from "semantic-ui-react";
-
 import { Link } from "react-router-dom";
 import axios from "axios";
+import noddleLogo from "../pages/images/noddlelogo.png"; // Import logo
+import examsImage from "../pages/images/exams.jpg"; // Import exams image
 
 const { MediaContextProvider, Media } = createMedia({
   breakpoints: {
@@ -27,6 +28,7 @@ const { MediaContextProvider, Media } = createMedia({
   },
 });
 
+// HomepageHeading Component
 const HomepageHeading = ({ mobile }) => (
   <Container text>
     <Header
@@ -61,13 +63,16 @@ HomepageHeading.propTypes = {
   mobile: PropTypes.bool,
 };
 
-class DesktopContainer extends Component {
-  state = {};
+// DesktopContainer Component
+class DesktopContainer extends React.Component {
+  state = {
+    fixed: false,
+  };
 
   toggleFixedMenu = (inView) => this.setState({ fixed: !inView });
 
   render() {
-    const { children } = this.props;
+    const { children, isLoggedIn, username } = this.props; // Destructure props
     const { fixed } = this.state;
 
     return (
@@ -87,7 +92,7 @@ class DesktopContainer extends Component {
               size="large"
             >
               <Container>
-                <Menu.Item as={Link} to="" active>
+                <Menu.Item as={Link} to="/" active>
                   Home
                 </Menu.Item>
                 <Menu.Item as={Link} to="/courses">
@@ -100,18 +105,35 @@ class DesktopContainer extends Component {
                   Smart Assessment
                 </Menu.Item>
                 <Menu.Item position="right">
-                  <Button as={Link} to="/login" inverted={!fixed}>
-                    Log in
-                  </Button>
-                  <Button
-                    as={Link}
-                    to="/register"
-                    inverted={!fixed}
-                    primary={fixed}
-                    style={{ marginLeft: "0.5em" }}
-                  >
-                    Sign in
-                  </Button>
+                  {isLoggedIn ? (
+                    <>
+                      <Menu.Item>
+                        <Icon name="user" /> Hello, {username}!
+                      </Menu.Item>
+                      <Button
+                        as={Link}
+                        to="/logout"
+                        inverted={!fixed}
+                      >
+                        Logout
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button as={Link} to="/login" inverted={!fixed}>
+                        Log in
+                      </Button>
+                      <Button
+                        as={Link}
+                        to="/register"
+                        inverted={!fixed}
+                        primary={fixed}
+                        style={{ marginLeft: "0.5em" }}
+                      >
+                        Sign up
+                      </Button>
+                    </>
+                  )}
                 </Menu.Item>
               </Container>
             </Menu>
@@ -127,96 +149,15 @@ class DesktopContainer extends Component {
 
 DesktopContainer.propTypes = {
   children: PropTypes.node,
+  isLoggedIn: PropTypes.bool.isRequired,
+  username: PropTypes.string,
 };
 
-// class MobileContainer extends Component {
-//   state = {};
-
-//   handleSidebarHide = () => this.setState({ sidebarOpened: false });
-
-//   handleToggle = () => this.setState({ sidebarOpened: true });
-
-//   render() {
-//     const { children } = this.props;
-//     const { sidebarOpened } = this.state;
-
-//     return (
-//       <Media as={Sidebar.Pushable} at="mobile">
-//         <Sidebar.Pushable>
-//           <Sidebar
-//             as={Menu}
-//             animation="overlay"
-//             inverted
-//             onHide={this.handleSidebarHide}
-//             vertical
-//             visible={sidebarOpened}
-//           >
-//             <Menu.Item as={Link} to="" active>
-//               Home
-//             </Menu.Item>
-//             <Menu.Item as={Link} to="">
-//               Courses
-//             </Menu.Item>
-//             <Menu.Item as={Link} to="">
-//               Exams
-//             </Menu.Item>
-//             <Menu.Item as={Link} to="">
-//               Smart Assessment
-//             </Menu.Item>
-//             <Menu.Item as={Link} to="">
-//               Log in
-//             </Menu.Item>
-//             <Menu.Item as={Link} to="">
-//               Sign Up
-//             </Menu.Item>
-//           </Sidebar>
-
-//           <Sidebar.Pusher dimmed={sidebarOpened}>
-//             <Segment
-//               inverted
-//               textAlign="center"
-//               style={{ minHeight: 350, padding: "1em 0em" }}
-//               vertical
-//             >
-//               <Container>
-//                 <Menu inverted pointing secondary size="large">
-//                   <Menu.Item onClick={this.handleToggle}>
-//                     <Icon name="sidebar" />
-//                   </Menu.Item>
-//                   <Menu.Item position="right">
-//                     <Button as={Link} to="" inverted>
-//                       Log in
-//                     </Button>
-//                     <Button
-//                       as={Link}
-//                       to=""
-//                       inverted
-//                       style={{ marginLeft: "0.5em" }}
-//                     >
-//                       Sign Up
-//                     </Button>
-//                   </Menu.Item>
-//                 </Menu>
-//               </Container>
-//               <HomepageHeading mobile />
-//             </Segment>
-
-//             {children}
-//           </Sidebar.Pusher>
-//         </Sidebar.Pushable>
-//       </Media>
-//     );
-//   }
-// }
-
-// MobileContainer.propTypes = {
-//   children: PropTypes.node,
-// };
-
+// ResponsiveContainer Component
 const ResponsiveContainer = ({ children }) => {
   const [username, setUsername] = useState("");
   const [isLoggedIn, setLoggedIn] = useState(false);
-  // const navigate = useNavigate();
+  const API_BASE_URL = process.env.REACT_APP_API_URL || "";
 
   useEffect(() => {
     const checkLoggedInUser = async () => {
@@ -229,12 +170,12 @@ const ResponsiveContainer = ({ children }) => {
             },
           };
           const response = await axios.get(
-            "http://127.0.0.1:8000/api/user/",
+            `${API_BASE_URL}/api/user/`,
             config
           );
           setLoggedIn(true);
           setUsername(response.data.username);
-          console.log(response.data.username);
+          console.log("Logged in as:", response.data.username);
         } else {
           setLoggedIn(false);
           setUsername("");
@@ -242,25 +183,21 @@ const ResponsiveContainer = ({ children }) => {
       } catch (error) {
         setLoggedIn(false);
         setUsername("");
+        console.error("Error fetching user data:", error);
       }
     };
     checkLoggedInUser();
-  }, []);
+  }, [API_BASE_URL]);
 
   return (
     <MediaContextProvider>
-      <DesktopContainer
-        isLoggedIn={isLoggedIn}
-        username={username}
-
-        // handleLogout={handleLogout}
-      >
+      <DesktopContainer isLoggedIn={isLoggedIn} username={username}>
         {children}
       </DesktopContainer>
+      {/* Uncomment and implement MobileContainer if needed */}
       {/* <MobileContainer
         isLoggedIn={isLoggedIn}
         username={username}
-        // handleLogout={handleLogout}
       >
         {children}
       </MobileContainer> */}
@@ -272,6 +209,7 @@ ResponsiveContainer.propTypes = {
   children: PropTypes.node,
 };
 
+// HomepageLayout Component
 const HomepageLayout = () => (
   <ResponsiveContainer>
     <Segment style={{ padding: "8em 0em" }} vertical>
@@ -286,11 +224,11 @@ const HomepageLayout = () => (
               securely taking online exams.
             </p>
             <Header as="h3" style={{ fontSize: "2em" }}>
-              Every exams is highly secure and sophisticatedly monitored by
+              Every exam is highly secure and sophisticatedly monitored by
               computer vision
             </Header>
             <p style={{ fontSize: "1.33em" }}>
-              Brightening the exams process with advance AI Assessment tools, be
+              Brightening the exams process with advanced AI Assessment tools, be
               it for learning or for exams.
             </p>
           </Grid.Column>
@@ -299,13 +237,13 @@ const HomepageLayout = () => (
               bordered
               rounded
               size="large"
-              src={require("../pages/images/exams.jpg")}
+              src={examsImage}
             />
           </Grid.Column>
         </Grid.Row>
         <Grid.Row>
           <Grid.Column textAlign="center">
-            <Button as={Link} to="" size="huge">
+            <Button as={Link} to="/learn-more" size="huge">
               Learn more
             </Button>
           </Grid.Column>
@@ -327,7 +265,7 @@ const HomepageLayout = () => (
           </Grid.Column>
           <Grid.Column style={{ paddingBottom: "5em", paddingTop: "5em" }}>
             <Header as="h3" style={{ fontSize: "2em" }}>
-              Computer vision
+              Computer Vision
             </Header>
             <p style={{ fontSize: "1.33em" }}>
               <b>Exams that</b> are monitored by AI to detect cheating and
@@ -341,15 +279,15 @@ const HomepageLayout = () => (
     <Segment style={{ padding: "8em 0em" }} vertical>
       <Container text>
         <Header as="h3" style={{ fontSize: "2em" }}>
-          Smart learning, quizes and assessments
+          Smart learning, quizzes, and assessments
         </Header>
         <p style={{ fontSize: "1.33em" }}>
-          Gone are the days of taking quizes and assessments in papers! Tired of
+          Gone are the days of taking quizzes and assessments on paper! Tired of
           waiting for the papers to be checked by the teacher? Noddle.org is
           here to help you!
         </p>
-        <Button as={Link} to="/home" size="large">
-          Read more on how its done
+        <Button as={Link} to="/how-it-works" size="large">
+          Read more on how it's done
         </Button>
 
         <Divider
@@ -365,9 +303,9 @@ const HomepageLayout = () => (
           Computer Vision
         </Header>
         <p style={{ fontSize: "1.33em" }}>
-          How does AI monitior exams and proctor excellently?
+          How does AI monitor exams and proctor excellently?
         </p>
-        <Button as={Link} to="" size="large">
+        <Button as={Link} to="/ai-monitoring" size="large">
           Learn more
         </Button>
       </Container>
@@ -380,40 +318,40 @@ const HomepageLayout = () => (
             <Grid.Column width={3}>
               <Header inverted as="h4" content="About" />
               <List link inverted>
-                <List.Item as={Link} to="">
+                <List.Item as={Link} to="/sitemap">
                   Sitemap
                 </List.Item>
-                <List.Item as={Link} to="">
+                <List.Item as={Link} to="/contact">
                   Contact Us
                 </List.Item>
-                <List.Item as={Link} to="">
+                <List.Item as={Link} to="/info">
                   More info
                 </List.Item>
-                <List.Item as={Link} to="">
-                  Final year project BCU
+                <List.Item as={Link} to="/project">
+                  Final Year Project BCU
                 </List.Item>
               </List>
             </Grid.Column>
             <Grid.Column width={3}>
               <Header inverted as="h4" content="Services" />
               <List link inverted>
-                <List.Item as={Link} to="">
+                <List.Item as={Link} to="/report-issue">
                   Report an issue
                 </List.Item>
-                <List.Item as={Link} to="">
+                <List.Item as={Link} to="/faq">
                   FAQ
                 </List.Item>
-                <List.Item as={Link} to="">
+                <List.Item as={Link} to="/hire">
                   Hire me
                 </List.Item>
-                <List.Item as={Link} to="">
+                <List.Item as={Link} to="/please">
                   Please
                 </List.Item>
               </List>
             </Grid.Column>
             <Grid.Column width={7}>
               <Header as="h4" inverted>
-                Final year project sample site for BCU
+                Final Year Project Sample Site for BCU
               </Header>
               <p>
                 An ambitious project that will reflect the learning capabilities
