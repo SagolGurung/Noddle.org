@@ -16,10 +16,7 @@ from datetime import timedelta
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-v5842almzezmvr(lp(=^dh$$10^7mp0m0kt0#^&q2@%(fj9trp'
 
 # SECURITY WARNING: don't run with debug turned on in production!
